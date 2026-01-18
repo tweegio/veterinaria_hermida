@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Veterinaria</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-espera {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .badge-atendiendo {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .badge-completado {
+            background: #28a745;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .historial-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐾 Sistema Veterinaria</h1>
+            <p>Gestión de Turnos e Historia Clínica</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('turnos')">📅 Turnos del Día</button>
+            <button class="tab" onclick="switchTab('pacientes')">🐕 Pacientes</button>
+            <button class="tab" onclick="switchTab('config')">⚙️ Configuración</button>
+        </div>
+
+        <div class="content">
+            <!-- SECCIÓN TURNOS -->
+            <div id="turnos-section" class="section active">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Turnos de Hoy</h2>
+                    <button class="btn btn-primary" onclick="openModal('nuevoTurno')">+ Nuevo Turno</button>
+                </div>
+                <div id="turnos-list"></div>
+            </div>
+
+            <!-- SECCIÓN PACIENTES -->
+            <div id="pacientes-section" class="section">
+                <input type="text" class="search-box" id="search-pacientes" placeholder="🔍 Buscar paciente por nombre de mascota o dueño..." onkeyup="filterPacientes()">
+                <button class="btn btn-primary" onclick="openModal('nuevoPaciente')" style="margin-bottom: 20px;">+ Nuevo Paciente</button>
+                <div id="pacientes-list"></div>
+            </div>
+
+            <!-- SECCIÓN CONFIGURACIÓN -->
+            <div id="config-section" class="section">
+                <h2 style="margin-bottom: 20px;">Configuración de Firebase</h2>
+                <div class="card">
+                    <p style="margin-bottom: 15px; color: #6c757d;">Para usar esta aplicación, necesitas configurar Firebase Firestore:</p>
+                    <ol style="line-height: 2; margin-left: 20px; color: #333;">
+                        <li>Ve a <a href="https://console.firebase.google.com" target="_blank" style="color: #667eea;">Firebase Console</a></li>
+                        <li>Crea un nuevo proyecto</li>
+                        <li>Activa Firestore Database</li>
+                        <li>Ve a Configuración del proyecto → Tus aplicaciones → Web</li>
+                        <li>Copia la configuración y pégala abajo</li>
+                    </ol>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>Firebase Config (JSON)</label>
+                        <textarea id="firebase-config" rows="10" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}'></textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="saveFirebaseConfig()">💾 Guardar Configuración</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVO TURNO -->
+    <div id="modal-turno" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Turno</h2>
+                <button class="close-btn" onclick="closeModal('modal-turno')">✕</button>
+            </div>
+            <form onsubmit="guardarTurno(event)">
+                <div class="form-group">
+                    <label>Paciente *</label>
+                    <select id="turno-paciente" required>
+                        <option value="">Seleccionar paciente...</option>
+                    </select>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Fecha *</label>
+                        <input type="date" id="turno-fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora *</label>
+                        <input type="time" id="turno-hora" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Motivo de la consulta *</label>
+                    <textarea id="turno-motivo" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Guardar Turno</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVO PACIENTE -->
+    <div id="modal-paciente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Paciente</h2>
+                <button class="close-btn" onclick="closeModal('modal-paciente')">✕</button>
+            </div>
+            <form onsubmit="guardarPaciente(event)">
+                <h3 style="color: #667eea; margin-bottom: 15px;">Datos de la Mascota</h3>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" id="pac-nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Especie *</label>
+                        <select id="pac-especie" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="Perro">Perro</option>
+                            <option value="Gato">Gato</option>
+                            <option value="Ave">Ave</option>
+                            <option value="Conejo">Conejo</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Raza</label>
+                        <input type="text" id="pac-raza">
+                    </div>
+                    <div class="form-group">
+                        <label>Edad</label>
+                        <input type="text" id="pac-edad" placeholder="ej: 2 años">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Sexo</label>
+                    <select id="pac-sexo">
+                        <option value="">Seleccionar...</option>
+                        <option value="Macho">Macho</option>
+                        <option value="Hembra">Hembra</option>
+                    </select>
+                </div>
+
+                <h3 style="color: #667eea; margin: 20px 0 15px;">Datos del Dueño</h3>
+                <div class="form-group">
+                    <label>Nombre completo *</label>
+                    <input type="text" id="pac-dueno" required>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Teléfono *</label>
+                        <input type="tel" id="pac-telefono" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="pac-email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" id="pac-direccion">
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Guardar Paciente</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL HISTORIAL -->
+    <div id="modal-historial" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Historia Clínica</h2>
+                <button class="close-btn" onclick="closeModal('modal-historial')">✕</button>
+            </div>
+            <div id="historial-content"></div>
+            <button class="btn btn-primary" onclick="openNuevaConsulta()" style="margin-top: 20px; width: 100%;">+ Agregar Consulta</button>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVA CONSULTA -->
+    <div id="modal-consulta" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nueva Consulta</h2>
+                <button class="close-btn" onclick="closeModal('modal-consulta')">✕</button>
+            </div>
+            <form onsubmit="guardarConsulta(event)">
+                <div class="form-group">
+                    <label>Fecha *</label>
+                    <input type="date" id="cons-fecha" required>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Peso (kg)</label>
+                        <input type="number" step="0.1" id="cons-peso">
+                    </div>
+                    <div class="form-group">
+                        <label>Temperatura (°C)</label>
+                        <input type="number" step="0.1" id="cons-temp">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Motivo de consulta *</label>
+                    <textarea id="cons-motivo" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Diagnóstico *</label>
+                    <textarea id="cons-diagnostico" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tratamiento *</label>
+                    <textarea id="cons-tratamiento" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea id="cons-observaciones" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Guardar Consulta</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        let db = null;
+        let currentPacienteId = null;
+
+        async function initFirebase() {
+            try {
+                const configStr = localStorage.getItem('firebase-config');
+                if (!configStr) {
+                    console.log('No hay configuración de Firebase');
+                    return false;
+                }
+
+                const config = JSON.parse(configStr);
+                
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+                const { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, orderBy } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+                
+                const app = initializeApp(config);
+                db = getFirestore(app);
+                
+                window.firestoreFunctions = { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, orderBy };
+                
+                console.log('Firebase inicializado correctamente');
+                return true;
+            } catch (error) {
+                console.error('Error al inicializar Firebase:', error);
+                alert('Error al conectar con Firebase. Verifica tu configuración.');
+                return false;
+            }
+        }
+
+        const savedConfig = localStorage.getItem('firebase-config');
+        if (savedConfig) {
+            document.getElementById('firebase-config').value = savedConfig;
+            initFirebase().then(success => {
+                if (success) cargarTurnos();
+            });
+        }
+
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + '-section').classList.add('active');
+            
+            if (tab === 'turnos') cargarTurnos();
+            if (tab === 'pacientes') cargarPacientes();
+        };
+
+        window.openModal = async function(tipo) {
+            if (tipo === 'nuevoTurno') {
+                await cargarPacientesSelect();
+                document.getElementById('turno-fecha').valueAsDate = new Date();
+                document.getElementById('modal-turno').classList.add('active');
+            } else if (tipo === 'nuevoPaciente') {
+                document.getElementById('modal-paciente').classList.add('active');
+            }
+        };
+
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        };
+
+        window.saveFirebaseConfig = async function() {
+            const configText = document.getElementById('firebase-config').value;
+            try {
+                JSON.parse(configText);
+                localStorage.setItem('firebase-config', configText);
+                alert('Configuración guardada. Recargando...');
+                location.reload();
+            } catch (error) {
+                alert('Error: El JSON no es válido. Verifica la configuración.');
+            }
+        };
+
+        window.guardarTurno = async function(e) {
+            e.preventDefault();
+            
+            if (!db) {
+                alert('Debes configurar Firebase primero');
+                document.querySelectorAll('.tab')[2].click();
+                return;
+            }
+
+            const turno = {
+                pacienteId: document.getElementById('turno-paciente').value,
+                fecha: document.getElementById('turno-fecha').value,
+                hora: document.getElementById('turno-hora').value,
+                motivo: document.getElementById('turno-motivo').value,
+                estado: 'espera',
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                await window.firestoreFunctions.addDoc(window.firestoreFunctions.collection(db, 'turnos'), turno);
+                alert('Turno guardado correctamente');
+                closeModal('modal-turno');
+                e.target.reset();
+                cargarTurnos();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al guardar el turno');
+            }
+        };
+
+        window.guardarPaciente = async function(e) {
+            e.preventDefault();
+            
+            if (!db) {
+                alert('Debes configurar Firebase primero');
+                document.querySelectorAll('.tab')[2].click();
+                return;
+            }
+
+            const paciente = {
+                nombreMascota: document.getElementById('pac-nombre').value,
+                especie: document.getElementById('pac-especie').value,
+                raza: document.getElementById('pac-raza').value,
+                edad: document.getElementById('pac-edad').value,
+                sexo: document.getElementById('pac-sexo').value,
+                nombreDueno: document.getElementById('pac-dueno').value,
+                telefono: document.getElementById('pac-telefono').value,
+                email: document.getElementById('pac-email').value,
+                direccion: document.getElementById('pac-direccion').value,
+                fechaRegistro: new Date().toISOString()
+            };
+
+            try {
+                await window.firestoreFunctions.addDoc(window.firestoreFunctions.collection(db, 'pacientes'), paciente);
+                alert('Paciente guardado correctamente');
+                closeModal('modal-paciente');
+                e.target.reset();
+                cargarPacientes();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al guardar el paciente');
+            }
+        };
+
+        async function cargarTurnos() {
+            if (!db) {
+                document.getElementById('turnos-list').innerHTML = '<div class="empty-state"><h3>⚙️ Configura Firebase primero</h3><p>Ve a la pestaña de Configuración</p></div>';
+                return;
+            }
+
+            const turnosList = document.getElementById('turnos-list');
+            turnosList.innerHTML = '<p>Cargando...</p>';
+
+            try {
+                const hoy = new Date().toISOString().split('T')[0];
+                const turnosSnapshot = await window.firestoreFunctions.getDocs(
+                    window.firestoreFunctions.query(
+                        window.firestoreFunctions.collection(db, 'turnos'),
+                        window.firestoreFunctions.where('fecha', '==', hoy)
+                    )
+                );
+
+                if (turnosSnapshot.empty) {
+                    turnosList.innerHTML = '<div class="empty-state"><h3>No hay turnos para hoy</h3><p>Agrega un nuevo turno para comenzar</p></div>';
+                    return;
+                }
+
+                const pacientesSnapshot = await window.firestoreFunctions.getDocs(window.firestoreFunctions.collection(db, 'pacientes'));
+                const pacientesMap = {};
+                pacientesSnapshot.forEach(doc => {
+                    pacientesMap[doc.id] = doc.data();
+                });
+
+                const turnosArray = [];
+                turnosSnapshot.forEach(doc => {
+                    turnosArray.push({ id: doc.id, ...doc.data() });
+                });
+
+                turnosArray.sort((a, b) => a.hora.localeCompare(b.hora));
+
+                let html = '';
+                turnosArray.forEach(turno => {
+                    const paciente = pacientesMap[turno.pacienteId] || {};
+                    
+                    html += `
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">${turno.hora} - ${paciente.nombreMascota || 'Paciente no encontrado'}</div>
+                                    <p style="color: #6c757d; margin-top: 5px;">Dueño: ${paciente.nombreDueno || 'N/A'}</p>
+                                </div>
+                                <span class="badge badge-${turno.estado}">${turno.estado.toUpperCase()}</span>
+                            </div>
+                            <p><strong>Motivo:</strong> ${turno.motivo}</p>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" onclick="cambiarEstado('${turno.id}', 'atendiendo')">En Atención</button>
+                                <button class="btn btn-success" onclick="cambiarEstado('${turno.id}', 'completado')">Completar</button>
+                                <button class="btn btn-danger" onclick="eliminarTurno('${turno.id}')">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                turnosList.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+                turnosList.innerHTML = '<p>Error al cargar turnos</p>';
+            }
+        }
+
+        async function cargarPacientes() {
+            if (!db) {
+                document.getElementById('pacientes-list').innerHTML = '<div class="empty-state"><h3>⚙️ Configura Firebase primero</h3><p>Ve a la pestaña de Configuración</p></div>';
+                return;
+            }
+
+            const pacientesList = document.getElementById('pacientes-list');
+            pacientesList.innerHTML = '<p>Cargando...</p>';
+
+            try {
+                const pacientesSnapshot = await window.firestoreFunctions.getDocs(window.firestoreFunctions.collection(db, 'pacientes'));
+
+                if (pacientesSnapshot.empty) {
+                    pacientesList.innerHTML = '<div class="empty-state"><h3>No hay pacientes registrados</h3><p>Agrega un nuevo paciente para comenzar</p></div>';
+                    return;
+                }
+
+                let html = '';
+                window.pacientesData = [];
+                
+                pacientesSnapshot.forEach(doc => {
+                    const paciente = { id: doc.id, ...doc.data() };
+                    window.pacientesData.push(paciente);
+                    
+                    html += `
+                        <div class="card paciente-item" data-nombre="${paciente.nombreMascota.toLowerCase()}" data-dueno="${paciente.nombreDueno.toLowerCase()}">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">🐾 ${paciente.nombreMascota}</div>
+                                    <p style="color: #6c757d; margin-top: 5px;">${paciente.especie} ${paciente.raza ? '- ' + paciente.raza : ''}</p>
+                                </div>
+                            </div>
+                            <div class="grid-2" style="margin-bottom: 15px;">
+                                <div><strong>Dueño:</strong> ${paciente.nombreDueno}</div>
+                                <div><strong>Teléfono:</strong> ${paciente.telefono}</div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" onclick="verHistorial('${doc.id}')">Ver Historia Clínica</button>
+                                <button class="btn btn-danger" onclick="eliminarPaciente('${doc.id}')">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                pacientesList.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+                pacientesList.innerHTML = '<p>Error al cargar pacientes</p>';
+            }
+        }
+
+        async function cargarPacientesSelect() {
+            if (!db) return;
+
+            const select = document.getElementById('turno-paciente');
+            select.innerHTML = '<option value="">Seleccionar paciente...</option>';
+
+            try {
+                const pacientesSnapshot = await window.firestoreFunctions.getDocs(window.firestoreFunctions.collection(db, 'pacientes'));
+                
+                pacientesSnapshot.forEach(doc => {
+                    const paciente = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${paciente.nombreMascota} - ${paciente.nombreDueno}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        window.filterPacientes = function() {
+            const searchTerm = document.getElementById('search-pacientes').value.toLowerCase();
+            const pacientes = document.querySelectorAll('.paciente-item');
+            
+            pacientes.forEach(card => {
+                const nombre = card.getAttribute('data-nombre');
+                const dueno = card.getAttribute('data-dueno');
+                
+                if (nombre.includes(searchTerm) || dueno.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        };
+
+        window.cambiarEstado = async function(turnoId, nuevoEstado) {
+            if (!db) return;
+
+            try {
+                await window.firestoreFunctions.updateDoc(
+                    window.firestoreFunctions.doc(db, 'turnos', turnoId),
+                    { estado: nuevoEstado }
+                );
+                cargarTurnos();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al actualizar el estado');
+            }
+        };
+
+        window.eliminarTurno = async function(turnoId) {
+            if (!confirm('¿Estás seguro de eliminar este turno?')) return;
+            if (!db) return;
+
+            try {
+                await window.firestoreFunctions.deleteDoc(window.firestoreFunctions.doc(db, 'turnos', turnoId));
+                cargarTurnos();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al eliminar el turno');
+            }
+        };
+
+        window.eliminarPaciente = async function(pacienteId) {
+            if (!confirm('¿Estás seguro de eliminar este paciente? Esto también eliminará su historia clínica.')) return;
+            if (!db) return;
+
+            try {
+                await window.firestoreFunctions.deleteDoc(window.firestoreFunctions.doc(db, 'pacientes', pacienteId));
+                
+                const consultasSnapshot = await window.firestoreFunctions.getDocs(
+                    window.firestoreFunctions.query(
+                        window.firestoreFunctions.collection(db, 'consultas'),
+                        window.firestoreFunctions.where('pacienteId', '==', pacienteId)
+                    )
+                );
+                
+                consultasSnapshot.forEach(async (doc) => {
+                    await window.firestoreFunctions.deleteDoc(window.firestoreFunctions.doc(db, 'consultas', doc.id));
+                });
+                
+                alert('Paciente eliminado correctamente');
+                cargarPacientes();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al eliminar el paciente');
+            }
+        };
+
+        window.verHistorial = async function(pacienteId) {
+            if (!db) return;
+            
+            currentPacienteId = pacienteId;
+            
+            try {
+                const pacienteDoc = window.pacientesData.find(p => p.id === pacienteId);
+                
+                const consultasSnapshot = await window.firestoreFunctions.getDocs(
+                    window.firestoreFunctions.query(
+                        window.firestoreFunctions.collection(db, 'consultas'),
+                        window.firestoreFunctions.where('pacienteId', '==', pacienteId),
+                        window.firestoreFunctions.orderBy('fecha', 'desc')
+                    )
+                );
+                
+                let html = `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #667eea;">🐾 ${pacienteDoc.nombreMascota}</h3>
+                        <p><strong>Dueño:</strong> ${pacienteDoc.nombreDueno}</p>
+                        <p><strong>Especie:</strong> ${pacienteDoc.especie} ${pacienteDoc.raza ? '- ' + pacienteDoc.raza : ''}</p>
+                    </div>
+                    <h4 style="margin-bottom: 15px;">Historial de Consultas</h4>
+                `;
+                
+                if (consultasSnapshot.empty) {
+                    html += '<div class="empty-state"><p>No hay consultas registradas</p></div>';
+                } else {
+                    consultasSnapshot.forEach(doc => {
+                        const consulta = doc.data();
+                        html += `
+                            <div class="historial-item">
+                                <p><strong>📅 Fecha:</strong> ${consulta.fecha}</p>
+                                ${consulta.peso ? `<p><strong>⚖️ Peso:</strong> ${consulta.peso} kg</p>` : ''}
+                                ${consulta.temperatura ? `<p><strong>🌡️ Temperatura:</strong> ${consulta.temperatura} °C</p>` : ''}
+                                <p><strong>Motivo:</strong> ${consulta.motivo}</p>
+                                <p><strong>Diagnóstico:</strong> ${consulta.diagnostico}</p>
+                                <p><strong>Tratamiento:</strong> ${consulta.tratamiento}</p>
+                                ${consulta.observaciones ? `<p><strong>Observaciones:</strong> ${consulta.observaciones}</p>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('historial-content').innerHTML = html;
+                document.getElementById('modal-historial').classList.add('active');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar el historial');
+            }
+        };
+
+        window.openNuevaConsulta = function() {
+            document.getElementById('cons-fecha').valueAsDate = new Date();
+            document.getElementById('modal-historial').classList.remove('active');
+            document.getElementById('modal-consulta').classList.add('active');
+        };
+
+        window.guardarConsulta = async function(e) {
+            e.preventDefault();
+            
+            if (!db || !currentPacienteId) return;
+
+            const consulta = {
+                pacienteId: currentPacienteId,
+                fecha: document.getElementById('cons-fecha').value,
+                peso: document.getElementById('cons-peso').value,
+                temperatura: document.getElementById('cons-temp').value,
+                motivo: document.getElementById('cons-motivo').value,
+                diagnostico: document.getElementById('cons-diagnostico').value,
+                tratamiento: document.getElementById('cons-tratamiento').value,
+                observaciones: document.getElementById('cons-observaciones').value,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                await window.firestoreFunctions.addDoc(window.firestoreFunctions.collection(db, 'consultas'), consulta);
+                alert('Consulta guardada correctamente');
+                closeModal('modal-consulta');
+                e.target.reset();
+                verHistorial(currentPacienteId);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al guardar la consulta');
+            }
+        };
+    </script>
+</body>
+</html>
+
+
+
+
