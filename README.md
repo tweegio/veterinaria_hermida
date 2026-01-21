@@ -199,8 +199,8 @@ Este proyecto está bajo la Licencia MIT - ver el archivo LICENSE para más deta
 👤 Autor
 Tu Nombre
 
-GitHub: @tu-usuario
-Email: tu-email@ejemplo.com
+GitHub: [@tweegio]: https://github.com/tweegio
+Email: tweegiodeveloper@gmail.com
 
 🙏 Agradecimientos
 
