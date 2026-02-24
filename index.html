@@ -957,11 +957,34 @@
             }
         };
     </script>
+    <div id="modalLogin" class="modal active">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3>🔐 Iniciar Sesión</h3>
+        </div>
+        <form id="formLogin" onsubmit="iniciarSesion(event)">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="login_email" required placeholder="admin@clinica.com">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="login_password" required>
+            </div>
+            <div id="loginError" style="color: red; margin-bottom: 10px; display: none;"></div>
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
     <footer>
         &#xa9 Tweegio 2026
     </footer>
 </body>
 </html>
+
 
 
 
